@@ -126,6 +126,7 @@ public class Primes extends JFrame {
 	}
 
 }
+
 /*
  * MSSV: 21006171
  * Họ và tên: Nguyễn Tống Anh Quân
