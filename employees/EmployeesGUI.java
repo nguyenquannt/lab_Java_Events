@@ -88,7 +88,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		b4 = Box.createHorizontalBox();
 
 		b_Center.add(b1);
-		b_Center.add(Box.createVerticalStrut(10)); // khoảng cách giữa các box
+		b_Center.add(Box.createVerticalStrut(10)); // khoản cách giữa các box
 		b_Center.add(b2);
 		b_Center.add(Box.createVerticalStrut(10));
 		b_Center.add(b3);
@@ -103,7 +103,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		b2.add(jTF_FirstName);
 		b2.add(jL_LastName);
 		b2.add(jTF_LastName);
-		jL_FirstName.setPreferredSize(jL_IDNV.getPreferredSize()); // canh chữ jl họ bằng với jl idnv
+		jL_FirstName.setPreferredSize(jL_IDNV.getPreferredSize()); // canh chữ jlabel họ bằng với jlabel idnv
 
 		b3.add(jL_Age);
 		b3.add(jTF_Age);
@@ -116,6 +116,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		b4.add(jTF_Salary);
 		jL_Salary.setPreferredSize(jL_IDNV.getPreferredSize());
 		jP_Center.add(b_Center);
+		
 		// JPanel jP_Table = new JPanel();
 		dTB_Model = new DefaultTableModel();
 		dTB_Model.addColumn("Mã NV");
@@ -132,8 +133,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		comboBox.addItem("Nam");
 		comboBox.addItem("Nữ");
 		sex_Columns.setCellEditor(new DefaultCellEditor(comboBox));
-		JScrollPane jSP_Center = new JScrollPane(jT_TableCenter, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		JScrollPane jSP_Center = new JScrollPane(jT_TableCenter, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		jSP_Center.setPreferredSize(new Dimension(650, 500));
 		jP_Center.add(jSP_Center);
 
@@ -161,13 +161,10 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jP_Function.add(bT_Save);
 		jsplitPane_South.add(jP_Function);
 
-		Border bdSouth = BorderFactory.createLineBorder(Color.DARK_GRAY, 1); // Tạo border bao xung quanh, màu đỏ, độ
-																				// dày là
-		// 1
-		TitledBorder titleBoder = new TitledBorder(bdSouth, " Nguyễn Quân "); // Title cho border, Gắn titele này vào
-		// border South
-		jsplitPane_South.setBorder(titleBoder); // Add titleBoder vào panel South
-
+		Border bdSouth = BorderFactory.createLineBorder(Color.DARK_GRAY, 1); 
+		TitledBorder titleBoder = new TitledBorder(bdSouth, " Nguyễn Quân ");
+		jsplitPane_South.setBorder(titleBoder);
+		
 		// Main
 		Container c_Main = getContentPane();
 		c_Main.setLayout(new BorderLayout());
@@ -215,7 +212,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 				obj[0] = jTF_ID.getText();
 				obj[1] = jTF_FirstName.getText();
 				obj[2] = jTF_LastName.getText();
-				//obj[3] = bG_Sex.getSelection();
+				// obj[3] = bG_Sex.getSelection();
 				obj[4] = jTF_Age.getText();
 				obj[5] = jTF_Salary.getText();
 
@@ -237,14 +234,13 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		} else if (o.equals(bT_Del)) {
 			if (jT_TableCenter.getSelectedRow() == -1) {
 				JOptionPane.showMessageDialog(this, "Hãy chọn dòng muốn xóa");
-			}
-			else {
-				if(JOptionPane.showConfirmDialog(this, "Bạn sẽ xóa xòng này nêu nhấn Yes", "Cảnh báo", 
+			} else {
+				if (JOptionPane.showConfirmDialog(this, "Bạn sẽ xóa xòng này nêu nhấn Yes", "Cảnh báo",
 						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
 					dTB_Model.removeRow(jT_TableCenter.getSelectedRow());
-					
+
 			}
-			
+
 		} else if (o.equals(bT_Save)) {
 
 		} else if (o.equals(bT_Search)) {
@@ -254,7 +250,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 
 }
 /*
- * Lỗi add giới tính
- * Lỗi thêm tringf ID Lỗi input Age, Salary bắt lỗi tuổi nhập vào không phải số
- * nguyên bắt lỗi tiền lương
+ * Lỗi nhận text Age, salary
+ * Lỗi option giới tính
+ * Chưa có lọc thêm trùng ID
  */
