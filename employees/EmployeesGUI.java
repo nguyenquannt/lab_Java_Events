@@ -10,12 +10,15 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,16 +37,18 @@ import javax.swing.table.TableColumn;
 public class EmployeesGUI extends JFrame implements ActionListener {
 
 	private JTextField jTF_ID, jTF_FirstName, jTF_LastName, jTF_Age, jTF_Salary, jTF_SearchID;
-	private Button bT_Search, bT_Add, bT_Del_All, bT_Del, bT_Save;
-	private JRadioButton jRB_male, jRb_Female;
+	private JButton jBT_Search, jBT_Add, jBT_Del_All, jBT_Del, jBT_Save, jBT_Exit;
+	private JRadioButton jRB_Male, jRb_Female;
 	private ButtonGroup bG_Sex;
 	private JTable jT_TableCenter;
-	private DefaultTableModel dTB_Model;
+	private DefaultTableModel dTM_Model;
+	
+	protected ListEmployees listEmployees;
 
 	private void initUI() {
 
 		this.setTitle("Quản lý nhân viên");
-		this.setSize(900, 500);
+		this.setSize(900, 590);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
@@ -60,7 +65,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		// Center
 		JPanel jP_Center = new JPanel();
 		jP_Center.setLayout(new BoxLayout(jP_Center, BoxLayout.Y_AXIS));
-
+		
 		JLabel jL_IDNV = new JLabel("Mã nhân viên: ");
 		JLabel jL_FirstName = new JLabel("Họ: ");
 		JLabel jL_LastName = new JLabel("Tên nhân viên: ");
@@ -74,10 +79,10 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jTF_Age = new JTextField();
 		jTF_Salary = new JTextField();
 
-		jRB_male = new JRadioButton("Nam", true); // mặc định chọn nam
+		jRB_Male = new JRadioButton("Nam", true); // mặc định chọn nam
 		jRb_Female = new JRadioButton("Nữ");
 		bG_Sex = new ButtonGroup();
-		bG_Sex.add(jRB_male);
+		bG_Sex.add(jRB_Male);
 		bG_Sex.add(jRb_Female);
 
 		Box b_Center, b1, b2, b3, b4;
@@ -108,7 +113,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		b3.add(jL_Age);
 		b3.add(jTF_Age);
 		b3.add(jL_Sex);
-		b3.add(jRB_male);
+		b3.add(jRB_Male);
 		b3.add(jRb_Female);
 		jL_Age.setPreferredSize(jL_IDNV.getPreferredSize());
 
@@ -118,14 +123,14 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jP_Center.add(b_Center);
 		
 		// JPanel jP_Table = new JPanel();
-		dTB_Model = new DefaultTableModel();
-		dTB_Model.addColumn("Mã NV");
-		dTB_Model.addColumn("Họ");
-		dTB_Model.addColumn("Tên");
-		dTB_Model.addColumn("Phái");
-		dTB_Model.addColumn("Tuổi");
-		dTB_Model.addColumn("Tiền lương");
-		jT_TableCenter = new JTable(dTB_Model);
+		dTM_Model = new DefaultTableModel();
+		dTM_Model.addColumn("Mã NV");
+		dTM_Model.addColumn("Họ");
+		dTM_Model.addColumn("Tên");
+		dTM_Model.addColumn("Phái");
+		dTM_Model.addColumn("Tuổi");
+		dTM_Model.addColumn("Tiền lương");
+		jT_TableCenter = new JTable(dTM_Model);
 
 		// tạo list option phái
 		TableColumn sex_Columns = jT_TableCenter.getColumnModel().getColumn(3);
@@ -134,32 +139,36 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		comboBox.addItem("Nữ");
 		sex_Columns.setCellEditor(new DefaultCellEditor(comboBox));
 		JScrollPane jSP_Center = new JScrollPane(jT_TableCenter, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		jSP_Center.setPreferredSize(new Dimension(650, 500));
+		jSP_Center.setPreferredSize(new Dimension(650, 320));
 		jP_Center.add(jSP_Center);
 
 		// South
 		JSplitPane jsplitPane_South = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		jsplitPane_South.setResizeWeight(0.5);
+		jsplitPane_South.setResizeWeight(0.2); // 20%/80% mỗi bên
 
 		JPanel jP_Search = new JPanel(); // phần tìm kiếm bên trái
 		JLabel jL_search = new JLabel("Nhập mã số cần tìm");
 		jTF_SearchID = new JTextField(15);
 		jP_Search.add(jL_search);
 		jP_Search.add(jTF_SearchID);
-		bT_Search = new Button("Tìm kiếm");
-		jP_Search.add(bT_Search);
+		jBT_Search = new JButton("Tìm kiếm");
+		jP_Search.add(jBT_Search);
 		jsplitPane_South.add(jP_Search);
 
 		JPanel jP_Function = new JPanel();
-		bT_Add = new Button("Thêm");
-		bT_Del_All = new Button("Xóa trắng");
-		bT_Del = new Button("Xóa");
-		bT_Save = new Button("Lưu");
-		jP_Function.add(bT_Add);
-		jP_Function.add(bT_Del_All);
-		jP_Function.add(bT_Del);
-		jP_Function.add(bT_Save);
+		jBT_Add = new JButton("Thêm");
+		jBT_Del_All = new JButton("Xóa trắng");
+		jBT_Del = new JButton("Xóa");
+		jBT_Save = new JButton("Lưu");
+		jBT_Exit = new JButton("Thoát");
+		jP_Function.add(jBT_Add);
+		jP_Function.add(jBT_Del_All);
+		jP_Function.add(jBT_Del);
+		jP_Function.add(jBT_Save);
+		jP_Function.add(jBT_Exit);
 		jsplitPane_South.add(jP_Function);
+		
+		
 
 		Border bdSouth = BorderFactory.createLineBorder(Color.DARK_GRAY, 1); 
 		TitledBorder titleBoder = new TitledBorder(bdSouth, " Nguyễn Quân ");
@@ -172,7 +181,181 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		c_Main.add(jP_Center, BorderLayout.CENTER);
 		c_Main.add(jsplitPane_South, BorderLayout.SOUTH);
 	}
+	
+	private void addEvents() {
 
+		offJtextField(); // tắt các JTF
+		
+		jBT_Search.addActionListener(this);
+		jBT_Add.addActionListener(this);
+		jBT_Del.addActionListener(this);
+		jBT_Del_All.addActionListener(this);		
+		jBT_Save.addActionListener(this);
+		
+		jRB_Male.addActionListener(this);
+		jRb_Female.addActionListener(this);
+		
+		jT_TableCenter.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				int row = jT_TableCenter.getSelectedRow();
+				
+				jTF_ID.setText(dTM_Model.getValueAt(row, 0).toString());
+				jTF_FirstName.setText(dTM_Model.getValueAt(row, 1).toString());
+				jTF_LastName.setText(dTM_Model.getValueAt(row, 2).toString());
+				
+				if(dTM_Model.getValueAt(row, 3).toString().equalsIgnoreCase("Nam")) {
+					jRB_Male.setSelected(true);
+					jRb_Female.setSelected(false);
+				}else {
+					jRB_Male.setSelected(false);
+					jRb_Female.setSelected(true);
+				}
+				 jTF_Age.setText(dTM_Model.getValueAt(row, 4) + "");
+				 jTF_Salary.setText(dTM_Model.getValueAt(row, 5) + "");
+				
+			}
+		});
+	}
+	// override các actionPerformed
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object obj = e.getSource();
+		if (obj.equals(jBT_Add)) {
+			if (jBT_Add.getText().equals("Thêm")) {
+				onJtextField();
+				jBT_Del.setEnabled(false);
+				jBT_Add.setText("Hủy");
+			} else {
+				jBT_Del.setEnabled(true);
+				jBT_Add.setText("Thêm");
+			}
+		} else if (obj.equals(jBT_Save)) {
+			if (jTF_ID.getText().equals("") || jTF_FirstName.getText().equals("") || jTF_LastName.getText().equals("")
+					|| jTF_Salary.getText().equals("") || jTF_Age.getText().equals("")) {
+				JOptionPane.showMessageDialog(null, "Bạn chưa nhập đầy đủ thông tin !");
+			} else {
+				try {
+					saveEmployees();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+//				jTF_FirstName.setText("");
+//				jTF_LastName.setText("");
+//				jTF_ID.setText("");
+//				jTF_Age.setText("");
+//				jTF_Salary.setText("");
+//				jBT_Add.setText("Thêm");
+				clear();
+				jTF_ID.requestFocus();
+				jRB_Male.setSelected(false);
+				jRb_Female.setSelected(false);
+
+				jBT_Del.setEnabled(true);
+				offJtextField();
+			}
+		}
+	}
+	// funtion
+	public void offJtextField() { 
+		//	tắt các JTF
+		jTF_ID.setEnabled(false);
+		jTF_FirstName.setEnabled(false);
+		jTF_LastName.setEnabled(false);
+		jTF_Age.setEnabled(false);
+		jTF_Salary.setEnabled(false);
+		jRB_Male.setEnabled(false);
+		jRb_Female.setEnabled(false);
+	}
+	public void onJtextField() {
+		// bật các JTF
+		jTF_ID.setEnabled(true);
+		jTF_FirstName.setEnabled(true);
+		jTF_LastName.setEnabled(true);
+		jTF_Age.setEnabled(true);
+		jTF_Salary.setEnabled(true);
+		jRB_Male.setEnabled(true);
+		jRb_Female.setEnabled(true);
+		jTF_ID.requestFocus();
+	}
+	public void saveEmployees() throws Exception{
+		String id = jTF_ID.getText();
+		String fName = jTF_FirstName.getText();
+		String lName = jTF_LastName.getText();
+		String sex = "";
+		if(jRB_Male.isSelected()) {
+			sex = jRB_Male.getText();
+		}else if(jRb_Female.isSelected()) {
+			sex = jRb_Female.getText();
+		}
+		int Age = Integer.parseInt(jTF_Age.getText());
+		double salary = Double.parseDouble(jTF_Salary.getText());
+		
+		Employees employees = new Employees(id, fName, lName, sex, Age, salary);
+		if(listEmployees.addEmployees(employees) == true) {
+			Object[] obj = new Object[6];
+			obj[0] = id;
+			obj[1] = fName;
+			obj[2] = lName;
+			obj[3] = sex;
+			obj[4] = Integer.toString(Age);
+			obj[5] = Double.toString(salary);
+			dTM_Model.addRow(obj);
+			JOptionPane.showMessageDialog(this, "Thêm thành công !");
+		}else {
+			JOptionPane.showMessageDialog(this, "Mã nhân viên đã tồn tại");
+			jTF_ID.setText("");
+		}
+	}
+	public void clear() {
+		jTF_Age.setText("");
+		jTF_FirstName.setText("");
+		jTF_ID.setText("");
+		jTF_LastName.setText("");
+		jTF_Salary.setText("");
+		jTF_SearchID.setText("");
+	}
+	public void delEmployees() throws Exception {
+		int row = jT_TableCenter.getSelectedRow();
+		if (row == -1) {
+			JOptionPane.showMessageDialog(this, "Hãy chọn dòng cần xóa !");
+		} else {
+			if (JOptionPane.showConfirmDialog(this, "Bạn có muốn xóa dòng này hay không", "Cảnh báo",
+					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				listEmployees.delEmployees(row);
+				dTM_Model.removeRow(row);
+				clear();
+
+			}
+		}
+	}
+	
 	public EmployeesGUI() {
 		initUI();
 		addEvents();
@@ -184,73 +367,6 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 
 	}
 
-	private void addEvents() {
 
-		bT_Search.addActionListener(this);
-		bT_Add.addActionListener(this);
-		bT_Del_All.addActionListener(this);
-		bT_Del.addActionListener(this);
-		bT_Save.addActionListener(this);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		Object o = e.getSource();
-		if (o.equals(bT_Add)) {
-			if (jTF_ID.getText().equals("") || jTF_FirstName.getText().equals("") || jTF_LastName.getText().equals("")
-					|| jTF_Age.getText().equals("") || jTF_Salary.getText().equals("")) {
-				JOptionPane.showMessageDialog(this, "Bạn đã nhập thiếu dữ liệu");
-			} else {
-				/*
-				 * Employees employees = new Employees(); employees.setIdNV(jTF_ID.getText());
-				 * employees.setFirstName(jTF_FirstName.getText());
-				 * employees.setLastNamel(jTF_LastName.getText()); int age =
-				 * Integer.parseInt(jTF_Age.getText()); employees.setAge(age); double salary =
-				 * Double.parseDouble(jTF_Salary.getText()); employees.setSalary(salary);
-				 */
-				Object[] obj = new Object[6];
-				obj[0] = jTF_ID.getText();
-				obj[1] = jTF_FirstName.getText();
-				obj[2] = jTF_LastName.getText();
-				// obj[3] = bG_Sex.getSelection();
-				obj[4] = jTF_Age.getText();
-				obj[5] = jTF_Salary.getText();
-
-				dTB_Model.addRow(obj);
-				this.jTF_Age.setText("");
-				this.jTF_FirstName.setText("");
-				this.jTF_ID.setText("");
-				this.jTF_LastName.setText("");
-				this.jTF_Salary.setText("");
-
-			}
-		} else if (o.equals(bT_Del_All)) {
-			jTF_Age.setText("");
-			jTF_FirstName.setText("");
-			jTF_ID.setText("");
-			jTF_LastName.setText("");
-			jTF_Salary.setText("");
-			jTF_SearchID.setText("");
-		} else if (o.equals(bT_Del)) {
-			if (jT_TableCenter.getSelectedRow() == -1) {
-				JOptionPane.showMessageDialog(this, "Hãy chọn dòng muốn xóa");
-			} else {
-				if (JOptionPane.showConfirmDialog(this, "Bạn sẽ xóa xòng này nêu nhấn Yes", "Cảnh báo",
-						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-					dTB_Model.removeRow(jT_TableCenter.getSelectedRow());
-
-			}
-
-		} else if (o.equals(bT_Save)) {
-
-		} else if (o.equals(bT_Search)) {
-
-		}
-	}
 
 }
-/*
- * Lỗi nhận text Age, salary
- * Lỗi option giới tính
- * Chưa có lọc thêm trùng ID
- */
