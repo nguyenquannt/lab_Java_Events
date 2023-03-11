@@ -263,7 +263,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 				jBT_Add.setText("Thêm");
 			}
 		} else if (obj.equals(jBT_Save)) {
-			
+
 			if (jTF_ID.getText().equals("") || jTF_FirstName.getText().equals("") || jTF_LastName.getText().equals("")
 					|| jTF_Salary.getText().equals("") || jTF_Age.getText().equals("")) {
 				JOptionPane.showMessageDialog(null, "Bạn chưa nhập đầy đủ thông tin !");
@@ -288,14 +288,20 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 				jBT_Del.setEnabled(true);
 				offJtextField();
 			}
-		}
-		/*
-		else if(obj.equals(jBT_Del_All)) {
+		} else if (obj.equals(jBT_Del)) {
+			try {
+				delEmployees();
+				// clearJTF();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				// e1.printStackTrace();
+			}
+
+		}else if(obj.equals(jBT_Del_All)) {
 			clear();
-		}else if(obj.equals(jBT_Exit)) {
+		}else if (obj.equals(jBT_Exit)) {
 			System.exit(0);
 		}
-		*/
 	}
 	// funtion
 	public void offJtextField() { 
@@ -350,14 +356,22 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		}
 	}
 	public void clear() {
-		jTF_Age.setText("");
-		jTF_FirstName.setText("");
+		if(JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa tất cả hay không ?", "cảnh báo",
+				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+			dTM_Model.setRowCount(0); // set các hàng table thành 0 => sẽ xóa dữ liệu của table
+			clearJTF(); // don sạch JTF
+		}
+	}
+	public void clearJTF() {
 		jTF_ID.setText("");
+		jTF_FirstName.setText("");
 		jTF_LastName.setText("");
+		jTF_Age.setText("");
 		jTF_Salary.setText("");
 		jTF_SearchID.setText("");
+		jRB_Male.setText("Nam");
 	}
-	public void delEmployees() throws Exception {
+	public void delEmployees() {
 		int row = jT_TableCenter.getSelectedRow();
 		if (row == -1) {
 			JOptionPane.showMessageDialog(this, "Hãy chọn dòng cần xóa !");
@@ -366,8 +380,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				listEmployees.delEmployees(row);
 				dTM_Model.removeRow(row);
-				clear();
-
+				clearJTF();
 			}
 		}
 	}
