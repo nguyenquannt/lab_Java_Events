@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -37,13 +38,13 @@ import javax.swing.table.TableColumn;
 public class EmployeesGUI extends JFrame implements ActionListener {
 
 	private JTextField jTF_ID, jTF_FirstName, jTF_LastName, jTF_Age, jTF_Salary, jTF_SearchID;
-	private JButton jBT_Search, jBT_Add, jBT_Del_All, jBT_Del, jBT_Save, jBT_Exit;
+	private JButton jBT_Search, jBT_Add, jBT_Del_All, jBT_Del, jBT_Save, jBT_Edit;
 	private JRadioButton jRB_Male, jRb_Female;
 	private ButtonGroup bG_Sex;
 	private JTable jT_TableCenter;
 	private DefaultTableModel dTM_Model;
 	protected ListEmployees listEmployees;
-	
+
 	public EmployeesGUI() {
 		listEmployees = new ListEmployees(); // phải khởi tạo listEmployee trước
 		initUI();
@@ -70,7 +71,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		// Center
 		JPanel jP_Center = new JPanel();
 		jP_Center.setLayout(new BoxLayout(jP_Center, BoxLayout.Y_AXIS));
-		
+
 		JLabel jL_IDNV = new JLabel("Mã nhân viên: ");
 		JLabel jL_FirstName = new JLabel("Họ: ");
 		JLabel jL_LastName = new JLabel("Tên nhân viên: ");
@@ -126,7 +127,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		b4.add(jTF_Salary);
 		jL_Salary.setPreferredSize(jL_IDNV.getPreferredSize());
 		jP_Center.add(b_Center);
-		
+
 		// JPanel jP_Table = new JPanel();
 		dTM_Model = new DefaultTableModel();
 		dTM_Model.addColumn("Mã NV");
@@ -143,7 +144,8 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		comboBox.addItem("Nam");
 		comboBox.addItem("Nữ");
 		sex_Columns.setCellEditor(new DefaultCellEditor(comboBox));
-		JScrollPane jSP_Center = new JScrollPane(jT_TableCenter, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		JScrollPane jSP_Center = new JScrollPane(jT_TableCenter, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		jSP_Center.setPreferredSize(new Dimension(650, 320));
 		jP_Center.add(jSP_Center);
 
@@ -165,20 +167,18 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jBT_Del_All = new JButton("Xóa trắng");
 		jBT_Del = new JButton("Xóa");
 		jBT_Save = new JButton("Lưu");
-		jBT_Exit = new JButton("Thoát");
+		jBT_Edit = new JButton("Sữa");
 		jP_Function.add(jBT_Add);
 		jP_Function.add(jBT_Del_All);
 		jP_Function.add(jBT_Del);
 		jP_Function.add(jBT_Save);
-		jP_Function.add(jBT_Exit);
+		jP_Function.add(jBT_Edit);
 		jsplitPane_South.add(jP_Function);
-		
-		
 
-		Border bdSouth = BorderFactory.createLineBorder(Color.DARK_GRAY, 1); 
+		Border bdSouth = BorderFactory.createLineBorder(Color.DARK_GRAY, 1);
 		TitledBorder titleBoder = new TitledBorder(bdSouth, " Nguyễn Quân ");
 		jsplitPane_South.setBorder(titleBoder);
-		
+
 		// Main
 		Container c_Main = getContentPane();
 		c_Main.setLayout(new BorderLayout());
@@ -186,70 +186,63 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		c_Main.add(jP_Center, BorderLayout.CENTER);
 		c_Main.add(jsplitPane_South, BorderLayout.SOUTH);
 	}
-	
+
 	private void addEvents() {
 
 		offJtextField(); // tắt các JTF
-		
 		jBT_Search.addActionListener(this);
 		jBT_Add.addActionListener(this);
 		jBT_Del.addActionListener(this);
-		jBT_Del_All.addActionListener(this);		
+		jBT_Del_All.addActionListener(this);
 		jBT_Save.addActionListener(this);
-		jBT_Exit.addActionListener(this);
-		
+		jBT_Edit.addActionListener(this);
 		jRB_Male.addActionListener(this);
 		jRb_Female.addActionListener(this);
-		
+
 		jT_TableCenter.addMouseListener(new MouseListener() {
-			
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mouseExited(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				int row = jT_TableCenter.getSelectedRow();
 				
+				int row = jT_TableCenter.getSelectedRow();
 				jTF_ID.setText(dTM_Model.getValueAt(row, 0).toString());
 				jTF_FirstName.setText(dTM_Model.getValueAt(row, 1).toString());
 				jTF_LastName.setText(dTM_Model.getValueAt(row, 2).toString());
-				
-				if(dTM_Model.getValueAt(row, 3).toString().equalsIgnoreCase("Nam")) {
+				if (dTM_Model.getValueAt(row, 3).toString().equalsIgnoreCase("Nam")) {
 					jRB_Male.setSelected(true);
 					jRb_Female.setSelected(false);
-				}else {
+				} else {
 					jRB_Male.setSelected(false);
 					jRb_Female.setSelected(true);
 				}
-				 jTF_Age.setText(dTM_Model.getValueAt(row, 4) + "");
-				 jTF_Salary.setText(dTM_Model.getValueAt(row, 5) + "");
-				
+				jTF_Age.setText(dTM_Model.getValueAt(row, 4) + "");
+				jTF_Salary.setText(dTM_Model.getValueAt(row, 5) + "");
 			}
 		});
 	}
-	// override các actionPerformed
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
@@ -266,22 +259,20 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 
 			if (jTF_ID.getText().equals("") || jTF_FirstName.getText().equals("") || jTF_LastName.getText().equals("")
 					|| jTF_Salary.getText().equals("") || jTF_Age.getText().equals("")) {
-				JOptionPane.showMessageDialog(null, "Bạn chưa nhập đầy đủ thông tin !");
+				JOptionPane.showMessageDialog(this, "Bạn chưa nhập đầy đủ thông tin !");
 			} else {
 				try {
 					saveEmployees();
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Bạn đã nhập sai dữ liệu, vui lòng kiểm tra lại ^^");
+					JOptionPane.showMessageDialog(this, "Bạn đã nhập sai dữ liệu, vui lòng kiểm tra lại ^^");
 				}
-
 				jTF_FirstName.setText("");
 				jTF_LastName.setText("");
 				jTF_ID.setText("");
 				jTF_Age.setText("");
 				jTF_Salary.setText("");
 				jBT_Add.setText("Thêm");
-
-				jTF_ID.requestFocus();
+				jTF_ID.requestFocus(); // requestFocus()
 				jRB_Male.setSelected(false);
 				jRb_Female.setSelected(false);
 
@@ -291,21 +282,23 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		} else if (obj.equals(jBT_Del)) {
 			try {
 				delEmployees();
-				// clearJTF();
+				clearJTF();
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				// e1.printStackTrace();
+				 e1.printStackTrace();
 			}
 
-		}else if(obj.equals(jBT_Del_All)) {
+		} else if (obj.equals(jBT_Del_All)) {
 			clear();
-		}else if (obj.equals(jBT_Exit)) {
-			System.exit(0);
+		} else if (obj.equals(jBT_Edit)) {
+			// System.exit(0);
+		} else if (obj.equals(jBT_Search)) {
+			searchID();
 		}
 	}
+	
 	// funtion
-	public void offJtextField() { 
-		//	tắt các JTF
+	public void offJtextField() {
+		// tắt các JTF
 		jTF_ID.setEnabled(false);
 		jTF_FirstName.setEnabled(false);
 		jTF_LastName.setEnabled(false);
@@ -314,6 +307,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jRB_Male.setEnabled(false);
 		jRb_Female.setEnabled(false);
 	}
+
 	public void onJtextField() {
 		// bật các JTF
 		jTF_ID.setEnabled(true);
@@ -325,22 +319,23 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jRb_Female.setEnabled(true);
 		jTF_ID.requestFocus();
 	}
-	public void saveEmployees() throws Exception{
-		
+
+	public void saveEmployees() throws Exception {
+
 		String id = jTF_ID.getText();
 		String fName = jTF_FirstName.getText();
 		String lName = jTF_LastName.getText();
 		String sex = "";
-		if(jRB_Male.isSelected()) {
+		if (jRB_Male.isSelected()) {
 			sex = jRB_Male.getText();
-		}else if(jRb_Female.isSelected()) {
+		} else if (jRb_Female.isSelected()) {
 			sex = jRb_Female.getText();
 		}
 		int Age = Integer.parseInt(jTF_Age.getText());
 		double salary = Double.parseDouble(jTF_Salary.getText());
-		
+
 		Employees employees = new Employees(id, fName, lName, sex, Age, salary);
-		if(listEmployees.addEmployees(employees) == true) {
+		if (listEmployees.addEmployees(employees) == true) {
 			Object[] obj = new Object[6];
 			obj[0] = id;
 			obj[1] = fName;
@@ -350,18 +345,20 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 			obj[5] = Double.toString(salary);
 			dTM_Model.addRow(obj);
 			JOptionPane.showMessageDialog(this, "Thêm thành công !");
-		}else {
+		} else {
 			JOptionPane.showMessageDialog(this, "Mã nhân viên đã tồn tại");
 			jTF_ID.setText("");
 		}
 	}
+	
 	public void clear() {
-		if(JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa tất cả hay không ?", "cảnh báo",
+		if (JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa tất cả hay không ?", "cảnh báo",
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 			dTM_Model.setRowCount(0); // set các hàng table thành 0 => sẽ xóa dữ liệu của table
-			clearJTF(); // don sạch JTF
+			clearJTF();
 		}
 	}
+	
 	public void clearJTF() {
 		jTF_ID.setText("");
 		jTF_FirstName.setText("");
@@ -371,6 +368,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jTF_SearchID.setText("");
 		jRB_Male.setText("Nam");
 	}
+	
 	public void delEmployees() {
 		int row = jT_TableCenter.getSelectedRow();
 		if (row == -1) {
@@ -385,14 +383,22 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		}
 	}
 	
+	public void searchID() {
+		int indexEmployees =  listEmployees.searchID(jTF_SearchID.getText());
+		jT_TableCenter.setRowSelectionInterval(indexEmployees, indexEmployees); // setRowSelectionInterval tô đậm dữ liệu từ dòng nào -> dòng nào
+		if(indexEmployees != 0) {
+			JOptionPane.showMessageDialog(this, "Không tìm thấy !");
+		}
+	}
 
+	public void editEployees() {
+		// listEmployees.editEmployees(getName(), getTitle(), getWarningString(),
+		// getName(), ALLBITS, ABORT)
+	}
 
 	public static void main(String[] args) {
 		EmployeesGUI nv = new EmployeesGUI();
 		nv.setVisible(true);
-
 	}
-
-
 
 }
