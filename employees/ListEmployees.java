@@ -23,12 +23,13 @@ public class ListEmployees {
 	}
 	// Thêm nhân viên
 	public boolean addEmployees(Employees employeesNew) {
-		if(!listEmployees.contains(employeesNew)) {
-			listEmployees.add(employeesNew);
-			return true;
-		}else {
-			return false;
+		for (int i = 0; i < listEmployees.size(); i++) {
+			if(listEmployees.get(i).getIdNV().equals(employeesNew.getIdNV())) {
+				return false;
+			}
 		}
+		listEmployees.add(employeesNew);
+		return true;
 	}
 	// xóa nhân viên theo vị trí
 	public boolean delEmployees(int index) {

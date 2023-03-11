@@ -42,8 +42,13 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 	private ButtonGroup bG_Sex;
 	private JTable jT_TableCenter;
 	private DefaultTableModel dTM_Model;
-	
 	protected ListEmployees listEmployees;
+	
+	public EmployeesGUI() {
+		listEmployees = new ListEmployees(); // phải khởi tạo listEmployee trước
+		initUI();
+		addEvents();
+	}
 
 	private void initUI() {
 
@@ -191,6 +196,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jBT_Del.addActionListener(this);
 		jBT_Del_All.addActionListener(this);		
 		jBT_Save.addActionListener(this);
+		jBT_Exit.addActionListener(this);
 		
 		jRB_Male.addActionListener(this);
 		jRb_Female.addActionListener(this);
@@ -257,6 +263,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 				jBT_Add.setText("Thêm");
 			}
 		} else if (obj.equals(jBT_Save)) {
+			
 			if (jTF_ID.getText().equals("") || jTF_FirstName.getText().equals("") || jTF_LastName.getText().equals("")
 					|| jTF_Salary.getText().equals("") || jTF_Age.getText().equals("")) {
 				JOptionPane.showMessageDialog(null, "Bạn chưa nhập đầy đủ thông tin !");
@@ -264,15 +271,16 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 				try {
 					saveEmployees();
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Bạn đã nhập sai dữ liệu, vui lòng kiểm tra lại ^^");
 				}
-//				jTF_FirstName.setText("");
-//				jTF_LastName.setText("");
-//				jTF_ID.setText("");
-//				jTF_Age.setText("");
-//				jTF_Salary.setText("");
-//				jBT_Add.setText("Thêm");
-				clear();
+
+				jTF_FirstName.setText("");
+				jTF_LastName.setText("");
+				jTF_ID.setText("");
+				jTF_Age.setText("");
+				jTF_Salary.setText("");
+				jBT_Add.setText("Thêm");
+
 				jTF_ID.requestFocus();
 				jRB_Male.setSelected(false);
 				jRb_Female.setSelected(false);
@@ -281,6 +289,13 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 				offJtextField();
 			}
 		}
+		/*
+		else if(obj.equals(jBT_Del_All)) {
+			clear();
+		}else if(obj.equals(jBT_Exit)) {
+			System.exit(0);
+		}
+		*/
 	}
 	// funtion
 	public void offJtextField() { 
@@ -305,6 +320,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jTF_ID.requestFocus();
 	}
 	public void saveEmployees() throws Exception{
+		
 		String id = jTF_ID.getText();
 		String fName = jTF_FirstName.getText();
 		String lName = jTF_LastName.getText();
@@ -356,10 +372,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		}
 	}
 	
-	public EmployeesGUI() {
-		initUI();
-		addEvents();
-	}
+
 
 	public static void main(String[] args) {
 		EmployeesGUI nv = new EmployeesGUI();
