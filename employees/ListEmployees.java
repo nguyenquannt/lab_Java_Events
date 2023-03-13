@@ -50,24 +50,40 @@ public class ListEmployees {
 		
 	}
 	// Sữa thông tin nhân viên
-	public boolean editEmployees(String idNV, String firstName, String lastNamel, String sex, int age, double salary) {
-		Employees employees = new Employees(idNV, firstName, lastNamel, sex, age, salary);
+	/*
+	public boolean editEmployees(String idNV) {
+		//Employees employees = new Employees(idNV, firstName, lastNamel, sex, age, salary);
 		
-		if(listEmployees.contains(employees)) {
+		if(listEmployees.getcontains(employees)) {
 			employees.setAge(age);
 			employees.setFirstName(firstName);
 			employees.setIdNV(idNV);
 			employees.setLastNamel(lastNamel);
 			employees.setSalary(salary);
 			employees.setSex(sex);
-			return true;
+			return employees;
 		}else {
-			return false;
+			return null;
 		}
 	}
+	*/
+	public boolean editEmployees(Employees employeeEdit) {
+		for (Employees employees : listEmployees) {
+			if(employees.getIdNV().equalsIgnoreCase(employeeEdit.getIdNV())) {
+				employees.setFirstName(employeeEdit.getFirstName());
+				employees.setLastNamel(employeeEdit.getLastNamel());
+				employees.setAge(employeeEdit.getAge());
+				employees.setSalary(employeeEdit.getSalary());
+				employees.setSex(employeeEdit.getSex());
+				return true;
+			}
+		}
+		return false;
+	}
 	// Kiểm tra sự tồn tại của nhân viên trong danh sách thông qua id
+	
 	public int searchID(String id) {
-		int index = 0;
+		int index = -1;
 		for (Employees employees : listEmployees) {
 			if(employees.getIdNV().equalsIgnoreCase(id)) {
 				index = listEmployees.indexOf(employees); // lấy vị trí phần tử
@@ -75,4 +91,15 @@ public class ListEmployees {
 		}
 		return index;
 	}
+	/*
+	public Employees searchID(String idSearch) {
+		for (Employees employees : listEmployees) {
+			if(employees.getIdNV().equalsIgnoreCase(idSearch)) {
+				return employees;
+			}
+		}
+		return null;
+	}
+	*/
 }
+

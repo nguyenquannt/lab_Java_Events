@@ -30,8 +30,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -167,7 +170,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jBT_Del_All = new JButton("Xóa trắng");
 		jBT_Del = new JButton("Xóa");
 		jBT_Save = new JButton("Lưu");
-		jBT_Edit = new JButton("Sữa");
+		jBT_Edit = new JButton("Sửa");
 		jP_Function.add(jBT_Add);
 		jP_Function.add(jBT_Del_All);
 		jP_Function.add(jBT_Del);
@@ -281,7 +284,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 			}
 		} else if (obj.equals(jBT_Del)) {
 			try {
-				delEmployees();
+				deleteE(); // hàm xóa nhân viên
 				clearJTF();
 			} catch (Exception e1) {
 				 e1.printStackTrace();
@@ -290,7 +293,25 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		} else if (obj.equals(jBT_Del_All)) {
 			clear();
 		} else if (obj.equals(jBT_Edit)) {
-			// System.exit(0);
+			
+			String fName = jTF_FirstName.getText();
+			String lName = jTF_LastName.getText();
+			int age = Integer.parseInt(jTF_Age.getText());
+			double salary = Double.parseDouble(jTF_Salary.getText());
+			String sex ="";
+			if (jRB_Male.isSelected()) {
+				sex = jRB_Male.getText();
+			} else if (jRb_Female.isSelected()) {
+				sex = jRb_Female.getText();
+			}
+
+			Employees tmpEmployeeEdit = new Employees(jTF_ID.getText(), fName, lName, sex, age, salary);
+			listEmployees.editEmployees(tmpEmployeeEdit);
+			fillData();
+			JOptionPane.showMessageDialog(this, "Cập nhập thành công !");
+			
+			
+			
 		} else if (obj.equals(jBT_Search)) {
 			searchID();
 		}
@@ -369,7 +390,7 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 		jRB_Male.setText("Nam");
 	}
 	
-	public void delEmployees() {
+	public void deleteE() {
 		int row = jT_TableCenter.getSelectedRow();
 		if (row == -1) {
 			JOptionPane.showMessageDialog(this, "Hãy chọn dòng cần xóa !");
@@ -382,23 +403,73 @@ public class EmployeesGUI extends JFrame implements ActionListener {
 			}
 		}
 	}
-	
 	public void searchID() {
-		int indexEmployees =  listEmployees.searchID(jTF_SearchID.getText());
-		jT_TableCenter.setRowSelectionInterval(indexEmployees, indexEmployees); // setRowSelectionInterval tô đậm dữ liệu từ dòng nào -> dòng nào
-		if(indexEmployees != 0) {
+		
+		jTF_ID.setEnabled(false);
+		jTF_FirstName.setEnabled(true);
+		jTF_LastName.setEnabled(true);
+		jTF_Age.setEnabled(true);
+		jTF_Salary.setEnabled(true);
+		jRB_Male.setEnabled(true);
+		jRb_Female.setEnabled(true);
+		
+		int indexEmployees = listEmployees.searchID(jTF_SearchID.getText());
+		if (indexEmployees < 0) {
 			JOptionPane.showMessageDialog(this, "Không tìm thấy !");
+		} else {
+			jT_TableCenter.setRowSelectionInterval(indexEmployees, indexEmployees); // setRowSelectionInterval tô đậm dữ liệu từ dòng nào -> dòng nào
+																				
+
+			Object[] obj = new Object[6];
+			obj[0] = jT_TableCenter.getValueAt(indexEmployees, 0);
+			obj[1] = jT_TableCenter.getValueAt(indexEmployees, 1);
+			obj[2] = jT_TableCenter.getValueAt(indexEmployees, 2);
+			obj[3] = jT_TableCenter.getValueAt(indexEmployees, 3) + "";
+			obj[4] = jT_TableCenter.getValueAt(indexEmployees, 4) + "";
+			obj[5] = jT_TableCenter.getValueAt(indexEmployees, 5) + "";
+
+			jTF_ID.setText(obj[0].toString());
+			jTF_FirstName.setText(obj[1].toString());
+			jTF_LastName.setText(obj[2].toString());
+			if (obj[3].equals("Nam")) {
+				jRB_Male.isSelected();
+			} else if (obj[3].equals("Nữ")) {
+				jRb_Female.isSelected();
+			}
+			jTF_Age.setText(obj[4].toString());
+			jTF_Salary.setText(obj[5].toString());
+
+		}
+
+	}
+	public void fillData () {
+		DefaultTableModel tmpDTM = (DefaultTableModel) jT_TableCenter.getModel();
+		tmpDTM.setRowCount(0); //clear tabel
+		for (Employees employee : listEmployees.getListEmployees()) {
+			Object obj[] = new Object[6];
+			obj[0] = employee.getIdNV();
+			obj[1] = employee.getFirstName();
+			obj[2] = employee.getLastNamel();
+			obj[3] = employee.getSex();
+			obj[4] = employee.getAge();
+			obj[5] = employee.getSalary();
+			tmpDTM.addRow(obj);
 		}
 	}
-
-	public void editEployees() {
-		// listEmployees.editEmployees(getName(), getTitle(), getWarningString(),
-		// getName(), ALLBITS, ABORT)
-	}
-
+	
+	/*
+	 * 1) Dùng chức năng tìm kiếm để tìm id cần sửa
+	 * 2) Chương trình sẽ trỏ đến dòng đó, bật JTF hãy thay đổi thông tin mong muốn trong JTF
+	 * 3) Nhấn nút "Sủa để lưu thôn tin"
+	 */
+	
 	public static void main(String[] args) {
 		EmployeesGUI nv = new EmployeesGUI();
 		nv.setVisible(true);
 	}
 
 }
+/*
+ * 1) lỗi có thể sửa trùng id trong danh sách
+ * 2) không sửa được đối tượng đầu tiên trong danh sách
+ */
